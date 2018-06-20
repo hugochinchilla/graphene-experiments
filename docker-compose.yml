@@ -1,0 +1,47 @@
+version: '3.3'
+
+services:
+  app:
+    build:
+      context: .
+      args:
+        BUILD_ENV: dev
+    user: $UID
+    volumes:
+      - .:/code
+    environment:
+      WEB_CONCURRENCY: "4"
+    env_file:
+      - .env.sample
+      - .env
+    depends_on:
+      - postgres
+    command:
+      - gunicorn
+      - foobar.wsgi:application
+      - -b
+      - 0.0.0.0:8080
+      - --log-file=-
+      - --log-level=debug
+      - --reload
+    ports:
+      - 8080:8080
+    networks:
+       - overlay
+
+  postgres:
+    image: library/postgres:9.4.1
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "supersecret"
+      POSTGRES_DB: "application"
+    volumes:
+      - "db-data:/var/lib/postgresql/data"
+    networks:
+       - overlay
+
+volumes:
+  db-data:
+
+networks:
+  overlay:

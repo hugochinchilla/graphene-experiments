@@ -1,0 +1,6 @@
+__pycache__
+*.pyc
+.env
+foobar/static/*
+!foobar/static/.gitkeep
+.cache/
